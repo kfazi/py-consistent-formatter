@@ -1,0 +1,38 @@
+[build-system]
+requires = [
+    "hatchling==1.18.0",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "kfazi-yapf"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Marek Antoniak" }
+]
+dependencies = [
+    "yapf ~= 0.40",
+    "isort ~= 5.12",
+    "docformatter ~= 1.7",
+    "tokenize_rt ~= 5.2",
+]
+
+[project.scripts]
+kfazi-yapf = "kfazi_yapf.__main__:main"
+
+[tool.hatch.envs.default]
+dependencies = [
+    "pytest ~= 7.2",
+]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/.github"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "kfazi_yapf"
+]
