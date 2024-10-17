@@ -48,7 +48,7 @@ def main() -> int:
     Returns:
         Exit code.
     """
-    parser = argparse.ArgumentParser(description=__doc__, prog='kfazi-yapf')
+    parser = argparse.ArgumentParser(description=__doc__, prog='py-consistent-formatter')
     parser.add_argument(
         'python_files',
         metavar='python-file',
