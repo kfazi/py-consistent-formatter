@@ -22,4 +22,4 @@ jobs:
     - name: Install hatch
       run: pip install -U hatch
     - name: Test with pytest
-      run: hatch run pytest
+      run: hatch run +py=${{ matrix.python-version }} pytest
