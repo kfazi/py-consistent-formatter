@@ -16,7 +16,7 @@ dependencies = [
     "yapf ~= 0.40",
     "isort ~= 5.12",
     "docformatter ~= 1.7",
-    "tokenize_rt ~= 5.2",
+    "tokenize_rt ~=6.0",
 ]
 
 [project.scripts]
