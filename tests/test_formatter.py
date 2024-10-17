@@ -39,7 +39,7 @@ def assets(script_dir: Path) -> Iterator[Assets]:
 
 def test_format_file(assets: Assets, script_dir: Path) -> None:
     subprocess.run(
-        [sys.executable, '-m', 'kfazi_yapf', assets.unformatted_file_path],
+        [sys.executable, '-m', 'py_consistent_formatter', assets.unformatted_file_path],
         cwd=script_dir,
         shell=False,
     )

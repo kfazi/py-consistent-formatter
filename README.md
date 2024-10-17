@@ -1,4 +1,4 @@
-![tests](https://github.com/kfazi/kfazi-yapf/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/kfazi/py-consistent-formatter/actions/workflows/tests.yml/badge.svg)
 
 # Introduction
 
