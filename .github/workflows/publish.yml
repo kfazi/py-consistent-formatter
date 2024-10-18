@@ -1,7 +1,9 @@
 name: Publish package
 
 on:
-  - push
+  push:
+    branches:
+    - main
 
 jobs:
   pypi-publish:
@@ -10,7 +12,8 @@ jobs:
     environment: release
     permissions:
       id-token: write
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    with:
+      skip-existing: true
     steps:
     - uses: actions/checkout@v4
       with:
