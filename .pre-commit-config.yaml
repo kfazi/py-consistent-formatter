@@ -2,7 +2,7 @@ repos:
   - repo: local
     hooks:
       - id: format-python-code
-        name: kfazi-yapf
+        name: py-consistent-formatter
         language: python
-        entry: hatch run kfazi-yapf
+        entry: hatch run py-consistent-formatter
         types: [python]

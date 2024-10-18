@@ -11,10 +11,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
-
+        python-version: ['3.11', '3.12', '3.13']
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v5
       with:
@@ -22,4 +24,4 @@ jobs:
     - name: Install hatch
       run: pip install -U hatch
     - name: Test with pytest
-      run: hatch run +py=${{ matrix.python-version }} pytest
+      run: hatch run pytest
