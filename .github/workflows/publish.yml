@@ -36,5 +36,10 @@ jobs:
       run: |
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git tag "v${{ env.PACKAGE_VERSION }}"
-        git push origin "v${{ env.PACKAGE_VERSION }}"
+        git fetch --tags
+        if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Tag v${{ env.VERSION}} already exists, skipping."
+        else
+            git tag "v${{ env.PACKAGE_VERSION }}"
+            git push origin "v${{ env.PACKAGE_VERSION }}"
+        fi
