@@ -9,18 +9,7 @@ import yapf
 from .sort_all import sort_public_exports
 
 
-def find_pyproject_toml() -> Path:
-    current_directory = Path.cwd()
-    while current_directory != current_directory.parent:
-        pyproject_toml = current_directory / 'pyproject.toml'
-        if pyproject_toml.exists():
-            return pyproject_toml
-        current_directory = current_directory.parent
-
-    raise FileNotFoundError('pyproject.toml not found')
-
-
-def format_text(file_text: str) -> str:
+def format_text(file_text: str, pyproject_toml: Path) -> str:
     """Formats python source.
 
     Aggregates several formatters in a deterministic way so that they don't try to fight each other.
@@ -34,12 +23,11 @@ def format_text(file_text: str) -> str:
 
     Args:
         file_text: Python source to format.
+        pyproject_toml: Path to the configuration file.
 
     Returns:
         Formatted source.
     """
-    pyproject_toml = find_pyproject_toml()
-
     sorted_all = sort_public_exports(file_text)
 
     (reformatted, _) = yapf.yapf_api.FormatCode(sorted_all, style_config=str(pyproject_toml))

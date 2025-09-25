@@ -4,7 +4,6 @@ import time
 from dataclasses import dataclass
 from enum import auto, StrEnum
 from itertools import takewhile
-from pathlib import Path
 
 import git
 

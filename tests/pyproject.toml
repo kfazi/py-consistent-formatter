@@ -10,6 +10,11 @@ split_all_top_level_comma_separated_values = true
 split_before_first_argument = true
 blank_line_before_nested_class_or_def = false
 
+[tool.yapfignore]
+ignore_patterns = [
+    "**/ignored.py",
+]
+
 [tool.isort]
 line_length = 140
 sections = [

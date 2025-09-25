@@ -8,22 +8,41 @@ import sys
 from pathlib import Path
 from typing import List
 
+import yapf
+
 from .formatter import format_text
 
 
-def format_file(file_path: Path) -> None:
+def find_pyproject_toml() -> Path:
+    """Finds nearest pyproject.toml file by looking in parent directories.
+    
+    Returns:
+        Path to the nearest pyproject.toml file.
+    """
+    current_directory = Path.cwd()
+    while current_directory != current_directory.parent:
+        pyproject_toml = current_directory / 'pyproject.toml'
+        if pyproject_toml.exists():
+            return pyproject_toml
+        current_directory = current_directory.parent
+
+    raise FileNotFoundError('pyproject.toml not found')
+
+
+def format_file(file_path: Path, pyproject_toml: Path) -> None:
     """In-place formats python source file.
 
     If the formatting does not change the contents of the file, the file will not be overwritten.
 
     Args:
         file_path: Path to the file to format.
+        pyproject_toml: Path to the configuration file.
     """
     try:
         with open(file_path, 'r') as fd:
             file_text = fd.read()
 
-        formatted_file_text = format_text(file_text)
+        formatted_file_text = format_text(file_text, pyproject_toml)
 
         if formatted_file_text != file_text:
             with open(file_path, 'w') as fd:
@@ -38,8 +57,10 @@ def format_files(file_paths: List[Path]) -> None:
     Args:
         file_paths: Paths to files to format.
     """
+    pyproject_toml = find_pyproject_toml()
+
     for file_path in file_paths:
-        format_file(file_path)
+        format_file(file_path, pyproject_toml)
 
 
 def main() -> int:
@@ -58,7 +79,10 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    format_files(args.python_files)
+    exclude_patterns_from_ignore_file = yapf.file_resources.GetExcludePatternsForDir(str(Path.cwd()))
+    files = [Path(file) for file in yapf.file_resources.GetCommandLineFiles([str(file) for file in args.python_files], False, exclude_patterns_from_ignore_file)]
+
+    format_files(files)
 
     return 0
 
