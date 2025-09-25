@@ -12,6 +12,7 @@ jobs:
     environment: release
     permissions:
       id-token: write
+      contents: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -25,7 +26,15 @@ jobs:
       run: pip install -U hatch
     - name: Build
       run: hatch build
+    - name: Get version from hatch
+      run: echo "PACKAGE_VERSION=$(hatch version)" >> $GITHUB_ENV
     - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         skip-existing: true
+    - name: Create tag
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git tag "v${{ env.PACKAGE_VERSION }}"
+        git push origin "v${{ env.PACKAGE_VERSION }}"

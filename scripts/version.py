@@ -3,7 +3,7 @@ import re
 import time
 from dataclasses import dataclass
 from enum import auto, StrEnum
-from itertools import takewhile
+from typing import Callable, Iterable, TypeVar
 
 import git
 
@@ -28,6 +28,21 @@ class Version:
 
         return text
 
+    @staticmethod
+    def parse(version_str: str) -> 'Version':
+        match = re.match(r'(\d+)\.(\d+)\.(\d+)(?:\.dev(\d+)\+g([0-9a-f]+))?(?:\.d(\d+))?', version_str)
+        if not match:
+            raise ValueError(f'Invalid version string: {version_str}')
+
+        major, minor, patch, unreleased_commit_count, head_rev, dirty_marker = match.groups()
+        return Version(
+            major=int(major),
+            minor=int(minor),
+            patch=int(patch),
+            unreleased_commit_count=int(unreleased_commit_count) if unreleased_commit_count else 0,
+            head_rev=head_rev if head_rev else '',
+            dirty_marker=dirty_marker if dirty_marker else ''
+        )
 
 RELEASE_BRANCH = 'main'
 BASE_VERSION = Version(major=1, minor=0, patch=1)
@@ -55,11 +70,26 @@ def get_commit_increment(commit: git.Commit) -> VersionIncrementType:
     return VersionIncrementType.NoIncrement
 
 
-def get_repo_version(repo: git.Repo) -> Version:
-    commits = takewhile(lambda x: x.hexsha != BASE_COMMIT, repo.iter_commits())
-    version = BASE_VERSION
+T = TypeVar('T')
 
-    for commit in reversed(list(commits)):
+
+def takewhile_inclusive(predicate: Callable[[T], bool], iterable: Iterable[T]):
+    for x in iterable:
+        yield x
+        if not predicate(x):
+            break
+
+        
+def get_repo_version(repo: git.Repo) -> Version:
+    if not repo.tags:
+        repo.remotes.origin.fetch(tags=True)
+
+    version_tags = {tag.commit.hexsha: tag for tag in repo.tags if re.match(r'v\d+\.\d+\.\d+', tag.name)}
+
+    commits = list(reversed(list(takewhile_inclusive(lambda x: x.hexsha not in version_tags, repo.iter_commits()))))
+    version = Version.parse(version_tags[commits[0].hexsha].name[1:])
+
+    for commit in commits[1:]:
         match get_commit_increment(commit):
             case VersionIncrementType.Major:
                 version = Version(major=version.major + 1, minor=0, patch=0)
@@ -74,11 +104,11 @@ def get_repo_version(repo: git.Repo) -> Version:
     head_rev = repo.git.rev_parse(repo.head.commit.hexsha, short=4)
     unreleased_commit_count = 0
 
-    if repo.active_branch.name != RELEASE_BRANCH:
+    if not repo.head.is_detached and repo.active_branch.name != RELEASE_BRANCH:
         merge_base = repo.git.merge_base(f'origin/{RELEASE_BRANCH}', 'HEAD')
         rev_list = repo.git.rev_list(f'{repo.head.name}...{merge_base}', count=True)
         unreleased_commit_count = int(rev_list)
-    elif repo.is_dirty():
+    if repo.is_dirty() and unreleased_commit_count == 0:
         unreleased_commit_count = 1
 
     if repo.is_dirty():
@@ -92,5 +122,6 @@ def get_repo_version(repo: git.Repo) -> Version:
 
 try:
     __version__ = str(get_repo_version(git.Repo('.')))
-except:
+except Exception as e:
     __version__ = '0.0.1-unknown'
+    
