@@ -18,6 +18,10 @@
             "matchDepTypes": "tool.hatch.envs.default",
             "semanticCommitType": "chore",
             "automerge": true
+        },
+        {
+            "matchManagers": ["github-actions"],
+            "automerge": true
         }
     ],
     "platformAutomerge": true
