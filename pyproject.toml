@@ -14,7 +14,7 @@ authors = [
 ]
 dependencies = [
     "yapf~=0.40",
-    "isort~=6.0",
+    "isort~=7.0",
     "docformatter~=1.7",
     "tokenize_rt~=6.0",
 ]
