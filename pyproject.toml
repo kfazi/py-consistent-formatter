@@ -14,7 +14,7 @@ authors = [
 ]
 dependencies = [
     "yapf~=0.40",
-    "isort~=7.0",
+    "isort~=8.0",
     "docformatter @ git+https://github.com/PyCQA/docformatter@d9ace1fdef5d2c164ee7284fa07a63f8ead48682",  # Use direct reference as there is no release that supports Python 3.14
     "tokenize_rt~=6.0",
 ]
