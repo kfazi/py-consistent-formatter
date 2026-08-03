@@ -30,9 +30,7 @@ def format_text(file_text: str, pyproject_toml: Path) -> str:
     """
     sorted_all = sort_public_exports(file_text)
 
-    (reformatted, _) = yapf.yapf_api.FormatCode(sorted_all, style_config=str(pyproject_toml))
-
-    buffer_in = io.StringIO(reformatted)
+    buffer_in = io.StringIO(sorted_all)
     buffer_out = io.StringIO()
     buffer_err = io.StringIO()
     config = docformatter.Configurater(args=['--config', str(pyproject_toml)])
@@ -55,7 +53,9 @@ def format_text(file_text: str, pyproject_toml: Path) -> str:
     buffer = io.StringIO()
     isort.stream(buffer_out, buffer, config=isort_config)
 
-    formatted_file_text = buffer.getvalue()
+    (reformatted, _) = yapf.yapf_api.FormatCode(buffer.getvalue(), style_config=str(pyproject_toml))
+
+    formatted_file_text = reformatted
     formatted_file_text = formatted_file_text.strip()
     if formatted_file_text != '':
         formatted_file_text += '\n'
