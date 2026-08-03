@@ -57,7 +57,7 @@ class VersionIncrementType(StrEnum):
 
 
 VersionIncrementMap = [
-    (r'^\w+(\([\w\s]*\))!:.*$', VersionIncrementType.Major),
+    (r'^\w+(\([\w\s]*\))?!:.*$', VersionIncrementType.Major),
     (r'^feat(\([\w\s]*\))?:.*$', VersionIncrementType.Minor),
     (r'^fix(\([\w\s]*\))?:.*$', VersionIncrementType.Patch),
 ]
